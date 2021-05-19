@@ -143,7 +143,7 @@ exports.handler = async function(event) {
       returnValue.averageRating = ratingTotal/returnValue.courseTotalReviews
   
       }
-      
+
       // add the section object to the return value
       returnValue.sections.push(sectionObject)
   

@@ -94,6 +94,59 @@ exports.handler = async function(event) {
     returnValue.sections.push(sectionObject)
 
     // 🔥 your code for the reviews/ratings goes here
+  
+      // ask Firebase for the review with the ID provided by the section
+      let reviewQuery = await db.collection('reviews').where(`sectionId`, `==`, sectionId).get()
+
+      // get documents from query
+      let review = reviewQuery.docs
+  
+      // create a new variable that sums the ratings
+      let sumRating = 0
+  
+      // add the number of reviews to course total reviews
+
+      returnValue.courseTotalReviews += review.length
+  
+      // loop through the documents
+      for (let j=0; j < review.length; j++) {
+  
+      // get the document ID of the reviews
+      let reviewId = review[j].id
+  
+      // get the document data from the review
+      let reviewData = review[j].data()
+  
+      // create an Object to be added to the return value of lambda
+      let reviewObject = {}
+      
+      // add the number of ratings per section
+      sectionObject.ratingNumberPerSection = review.length
+  
+      // sum all the ratings within each section
+      sumRating = sumRating + reviewData.rating
+  
+      // return the average rating
+      sectionObject.averageRating = sumRating/review.length
+  
+      // add the reviews to the review object
+      reviewObject.comment = reviewData.comment
+      reviewObject.rating = reviewData.rating
+  
+      // add the review object to the return value
+      sectionObject.review.push(reviewObject)
+  
+      // add the ratings of all sections
+      ratingTotal += reviewObject.rating
+  
+      // return the average rating 
+      returnValue.averageRating = ratingTotal/returnValue.courseTotalReviews
+  
+      }
+      
+      // add the section object to the return value
+      returnValue.sections.push(sectionObject)
+  
   }
 
   // return the standard response
